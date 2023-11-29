@@ -1,0 +1,11 @@
+requires 1.2.0
+
+cd lights
+CONVERT lights -out=../process  -debayer
+
+cd ../process
+
+REGISTER lights -prefix=r_
+
+
+STACK r_lights_.seq rej l 3 3 -norm=addscale -output_norm -rgb_equal -out=../stacked/stacked-lights

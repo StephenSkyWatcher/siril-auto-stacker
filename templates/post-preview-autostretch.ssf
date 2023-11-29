@@ -1,0 +1,14 @@
+requires 1.2.0
+
+#########################
+# POST PROCESSING
+#########################
+
+# Loads the stacked light file
+    LOAD %FILE%
+
+# Applies an autostretch
+    autostretch 
+
+# Saves copy
+    SAVEJPG autostretch-%FILE% 100

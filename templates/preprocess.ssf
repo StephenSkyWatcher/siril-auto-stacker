@@ -1,0 +1,52 @@
+requires 1.2.0
+
+#########################
+# CONVERSIONS
+#########################
+# Convert flats to FITS
+    cd flats
+    convert flats -out=../process
+
+# Convert Darks to FITS
+    cd ../darks
+    convert darks -out=../process
+
+# Convert lights to FITS
+    cd ../lights
+    convert lights -out=../process
+
+#########################
+# FLATS
+#########################
+
+# Calibrate Flats using Master Bias
+    cd ../process
+    calibrate flats_.seq -bias=%MASTER_BIAS_FILE% -cfa -equalize_cfa -prefix=pp_
+
+# Stack Flats
+    stack pp_flats_.seq rej w 3 3 -norm=mul -out=../stacked/stacked-flats-biases
+    cd ..
+
+#########################
+# DARKS
+#########################
+
+# Stack Darks
+    cd ./process
+    stack darks_.seq rej w 3 3 -nonorm -out=../stacked/stacked-darks
+    cd ..
+
+#########################
+# LIGHTS
+#########################
+
+# Calibrate lights using Darks and Flats w/ Bias
+    cd ./process
+    CALIBRATE lights_.seq -dark=../stacked/stacked-darks.fit -flat=../stacked/stacked-flats-biases.fit -cfa -equalize_cfa -cc=dark 3 3 -debayer -prefix=pp_
+
+# Registration
+    REGISTER pp_lights_.seq -prefix=r_
+
+# Stack Lights
+    STACK r_pp_lights_.seq rej l 3 3 -norm=addscale -output_norm -rgb_equal -out=../stacked/stacked-lights
+    cd ..
