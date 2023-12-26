@@ -1,6 +1,6 @@
 #!/bin/bash
 set -a               
-source $(pwd)/scripts/util/c.sh
+source $STACK_HOME/scripts/util/c.sh
 set +a
 
 echo "📷 ${BOLD}${GREEN}Starting Stack${NORMAL} 📷" && echo ""
@@ -22,7 +22,7 @@ function delaystart() {
 
 # Intro
 printDirDetails $WORKING_DIRECTORY
-delaystart 3
+# delaystart 3
 
 if [ -n "$NOVERIFY" ]; then
     echo "Skipping verifications"
@@ -31,6 +31,12 @@ else
     . $STACK_HOME/scripts/validation/check.sh
 fi
 
-# ./$STACK_HOME/scripts/preprocess.sh -i 100 -d $dir -c $CONFIG_DIR
-# ./$STACK_HOME/scripts/post-remove-green.sh -d $dir/stacked/ -f stacked-lights.fit -c $CONFIG_DIR &&
-# ./$STACK_HOME/scripts/post-preview-autostretch.sh -d $dir/stacked/ -f nogreen-stacked-lights.fit -c $CONFIG_DIR
+function get_exif_val_from_first_file() {
+  FIRST_FRAME="$1/$(ls $1 | grep "cr2" | head -1)"
+  v=$(sed "s/:\ /:/g" <<< "$(exiftool -s2 -$2 "$FIRST_FRAME")")
+  echo $v
+}
+
+. $STACK_HOME/scripts/preprocess.sh
+# . $STACK_HOME/scripts/post-remove-green.sh -d $dir/stacked/ -f stacked-lights.fit -c $CONFIG_DIR &&
+# . $STACK_HOME/scripts/post-preview-autostretch.sh -d $dir/stacked/ -f nogreen-stacked-lights.fit -c $CONFIG_DIR

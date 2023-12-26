@@ -1,11 +1,15 @@
 #!/bin/bash
-INSTALL_LOCATION="${INSTALL_LOCATION:-$(pwd)}"
-STACK_HOME="${STACK_HOME:-$(pwd)}"
-SCRIPTS_DIR=$INSTALL_LOCATION/scripts
+
+# INSTALL_LOCATION="${INSTALL_LOCATION:-$(pwd)}"
+# STACK_HOME="${STACK_HOME:-$(pwd)}"
+INSTALL_LOCATION=~/.local/share
+STACK_HOME=$INSTALL_LOCATION/stack
+DEFAULT_MASTER_BIASES=~/.local/share/stack/masters
+SCRIPTS_DIR=$STACK_HOME/scripts
 
 ARGS=$(getopt \
     --options 'l:p:B:b:D:d:F:f::gjvn' \
-    --longoptions 'master-biases-dir:,help,process-dir:,master-bias:,biases:master-dark:,lights:,darks:,master-flat:,flats:,lang::,no-verify,verbose,remove-green,jpeg' \
+    --longoptions 'master-biases-dir:,help,process-dir:,master-bias:,biases:master-dark:,lights:,darks:,master-flat:,flats:,lang::,no-flats,no-darks,no-biases,no-verify,verbose,remove-green,jpeg' \
     -- "${@}"\
 ) || exit
 
@@ -29,6 +33,18 @@ while true; do
         ;;
         (-n | --no-verify)
             ((NOVERIFY++))
+            shift
+        ;;
+        (--no-flats)
+            ((NO_FLATS++))
+            shift
+        ;;
+        (--no-biases)
+            ((NO_BIASES++))
+            shift
+        ;;
+        (--no-darks)
+            ((NO_DARKS++))
             shift
         ;;
         (--help)
@@ -108,6 +124,10 @@ echo "MASTER_DARK_FILE: "$MASTER_DARK_FILE
 echo "DARKS_PATH: "$DARKS_PATH
 echo "MASTER_FLAT_FILE: "$MASTER_FLAT_FILE
 echo "FLATS_PATH: "$FLATS_PATH
+echo ''
+echo "NO_FLATS: "$NO_FLATS
+echo "NO_DARKS: "$NO_DARKS
+echo "NO_BIASES: "$NO_BIASES
 echo ''
 echo "RENDER_JPEG: "$RENDER_JPEG
 echo "REMOVE_GREEN: "$REMOVE_GREEN

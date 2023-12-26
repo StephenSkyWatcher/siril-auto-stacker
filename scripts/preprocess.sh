@@ -1,36 +1,36 @@
 #!/bin/bash
 set -a               
-source $(pwd)/scripts/c.sh
+source $STACK_HOME/scripts/util/c.sh
 set +a
 
-PWD=`pwd`
-while getopts ":d:i:b:c:" opt; do
-  case $opt in
-    d) _WORKING_DIRECTORY="$OPTARG"
-    ;;
-    i) ISO="$OPTARG"
-    ;;
-    b) _MASTER_BIASES_DIR="$OPTARG"
-    ;;
-    c) CONFIG="$OPTARG"
-    ;;
-    \?) echo "Invalid option -$OPTARG" >&2
-    exit 1
-    ;;
-  esac
+# PWD=`pwd`
+# while getopts ":d:i:b:c:" opt; do
+#   case $opt in
+#     d) _WORKING_DIRECTORY="$OPTARG"
+#     ;;
+#     # i) ISO="$OPTARG"
+#     # ;;
+#     b) _MASTER_BIASES_DIR="$OPTARG"
+#     ;;
+#     # c) CONFIG="$OPTARG"
+#     # ;;
+#     \?) echo "Invalid option -$OPTARG" >&2
+#     exit 1
+#     ;;
+#   esac
 
-  case $OPTARG in
-    -*) echo "Option $opt needs a valid argument"
-    exit 1
-    ;;
-  esac
-done
+#   case $OPTARG in
+#     -*) echo "Option $opt needs a valid argument"
+#     exit 1
+#     ;;
+#   esac
+# done
 
-set -a               
-source $CONFIG
-souruce c.sh
-set +a
+# set -a               
+# source $CONFIG
+# set +a
 
+ISO=$(get_exif_val_from_first_file $LIGHTS_PATH "iso")
 
 # Masters
 MASTERS_DIR="$STACK_HOME/masters"

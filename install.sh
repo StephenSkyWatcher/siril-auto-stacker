@@ -27,6 +27,7 @@ function checkDependencies() {
     checkExists "exiftool"
     checkExists "convert"
     checkExists "Siril"
+    checkExists "darktable"
 }
 
 function installStacker() {
