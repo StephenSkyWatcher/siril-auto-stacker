@@ -1,3 +1,8 @@
 lib/masters/
 lib/starnet/
 *.fit
+tmp/
+tmp*
+*tmp
+__pycache__
+captures/

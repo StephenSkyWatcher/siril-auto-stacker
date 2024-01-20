@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv, dotenv_values
 from .siril import siril, write_script
 
@@ -13,6 +14,8 @@ STACKED_DIR=config.get('STACKED_DIR')
 STACKED_DARKS_NAME=config.get('STACKED_DARKS_NAME')
 
 def stackDarks(wd):
+    time_start = time.perf_counter()
+
     write_script(
         name=DARKS_TEMPLATE,
         content=f'''requires 1.2.0
@@ -31,3 +34,4 @@ stack darks_.seq rej w 3 3 -nonorm -out=../{STACKED_DIR}/{STACKED_DARKS_NAME}
         script=f"{SIRIL_TMP_DIR}/{DARKS_TEMPLATE}",
         log=f"{wd}/{DARKS_LOG}"
     )
+    print(f"Stacking Darks Total Time: {round(time.perf_counter() - time_start, 2)}")

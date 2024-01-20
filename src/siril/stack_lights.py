@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv, dotenv_values
 from .siril import siril, write_script
 
@@ -15,17 +16,19 @@ STACKED_DARKS_NAME=config.get('STACKED_DARKS_NAME')
 STACKED_FLATS_NAME=config.get('STACKED_FLATS_NAME')
 
 def stackLights(wd):
+
+    time_start = time.perf_counter()
     write_script(
         name=LIGHTS_TEMPLATE,
         content=f'''requires 1.2.0
 SETCPU {CPU_THREADS}
 cd lights
-# CONVERT lights -out=../{PROCESS_DIR}
-# cd ../{PROCESS_DIR}
-# CALIBRATE lights_.seq -dark=../{STACKED_DIR}/{STACKED_DARKS_NAME}.fit -flat=../{STACKED_DIR}/{STACKED_FLATS_NAME}.fit -cfa -equalize_cfa -cc=dark 3 3 -debayer -prefix=pp_
-# REGISTER pp_lights_.seq -prefix=r_ -2pass
-# REGISTER pp_lights_.seq -prefix=r_
-# STACK r_pp_lights_.seq rej l 3 3 -norm=addscale -output_norm -rgb_equal -out=../{STACKED_DIR}/{STACKED_LIGHTS_NAME}
+CONVERT lights -out=../{PROCESS_DIR}
+cd ../{PROCESS_DIR}
+CALIBRATE lights_.seq -dark=../{STACKED_DIR}/{STACKED_DARKS_NAME}.fits -flat=../{STACKED_DIR}/{STACKED_FLATS_NAME}.fits -cfa -equalize_cfa -cc=dark 3 3 -debayer -prefix=pp_
+REGISTER pp_lights_.seq -prefix=r_ -2pass
+REGISTER pp_lights_.seq -prefix=r_
+STACK r_pp_lights_.seq rej l 3 3 -norm=addscale -output_norm -rgb_equal -out=../{STACKED_DIR}/{STACKED_LIGHTS_NAME}
 cd ../{STACKED_DIR}
 LOAD {STACKED_LIGHTS_NAME}
 RMGREEN
@@ -43,3 +46,4 @@ SAVEJPG {STACKED_LIGHTS_NAME}-preview 100
         log=f"{wd}/{LIGHTS_LOG}"
     )
 
+    print(f"Stacking Lights Total Time: {round(time.perf_counter() - time_start, 2)}")

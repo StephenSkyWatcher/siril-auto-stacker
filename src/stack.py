@@ -1,14 +1,14 @@
 import argparse
 import os
 from dotenv import load_dotenv
-from src.validation import validate_frames
+# from src.validation import validate_frames
 from src.siril import stack
 from src.exif import get_required_exif_tags, get_user_comment
 
 load_dotenv()
 parser=argparse.ArgumentParser()
 
-parser.add_argument("--dir", '-d', help="working directory", type=str, default="./")
+parser.add_argument("--dir", '-d', help="working directory", type=str, default="/home/astrophotography/stack/captures/cigar-galaxy")
 args=parser.parse_args()
 
 first_light_frame = [args.dir + '/lights/' + f for f in os.listdir(args.dir + '/lights')][0]

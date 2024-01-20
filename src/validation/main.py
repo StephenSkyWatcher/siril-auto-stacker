@@ -25,7 +25,7 @@ DARK_FRAME_COUNT_MIN=int(config.get('DARK_FRAME_COUNT_MIN'))
 
 parser=argparse.ArgumentParser()
 
-parser.add_argument("--dir", '-d', help="working directory", type=str, default="./")
+parser.add_argument("--dir", '-d', help="working directory", type=str)
 args=parser.parse_args()
 
 parser.add_argument("--darks", '-k', help="dark frames directory", type=str, default=args.dir + '/darks')

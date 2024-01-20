@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv, dotenv_values
 from .siril import siril, write_script
 
@@ -9,6 +10,8 @@ STACKED_DIR=config.get('STACKED_DIR')
 PHOTOMETRIC_CC_LOG=config.get('PHOTOMETRIC_CC_LOG')
 
 def photometric_color_calibration(wd, file):
+    time_start = time.perf_counter()
+
     name=file.split('.fit')[0]
     write_script(
         name=PHOTOMETRIC_CC_TEMPLATE,
@@ -28,3 +31,5 @@ SAVE {name}-pcc-denoise
         script=f"{SIRIL_TMP_DIR}/{PHOTOMETRIC_CC_TEMPLATE}",
         log=f"{wd}/{PHOTOMETRIC_CC_LOG}"
     )
+
+    print(f"Photometric Color Calibration Total Time: {round(time.perf_counter() - time_start, 2)}")

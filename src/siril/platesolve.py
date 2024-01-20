@@ -1,3 +1,4 @@
+import time
 from dotenv import load_dotenv, dotenv_values
 from .siril import siril, write_script
 
@@ -11,6 +12,8 @@ PLATESOLVE_LOG=config.get('PLATESOLVE_LOG')
 STACKED_LIGHTS_NAME=config.get('STACKED_LIGHTS_NAME')
 
 def platesolve(wd, file):
+    time_start = time.perf_counter()
+        
     write_script(
         name=PLATESOLVE_TEMPLATE,
         content=f'''requires 1.2.0
@@ -27,3 +30,4 @@ SAVE {file}
         script=f"{SIRIL_TMP_DIR}/{PLATESOLVE_TEMPLATE}",
         log=f"{wd}/{PLATESOLVE_LOG}"
     )
+    print(f"Plate Solve Total Time: {round(time.perf_counter() - time_start, 2)}")

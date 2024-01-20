@@ -1,7 +1,8 @@
+import time
 from dotenv import load_dotenv, dotenv_values
 from .siril import siril, write_script
-import os
-import shutil
+from .maintenance import createDir, removeDir
+
 load_dotenv()
 config = dotenv_values(".env")
 SIRIL_TMP_DIR=config.get('SIRIL_TMP_DIR')
@@ -12,16 +13,10 @@ CHROMATIC_ABBERATION_LOG=config.get('CHROMATIC_ABBERATION_LOG')
 STACKED_LIGHTS_NAME=config.get('STACKED_LIGHTS_NAME')
 RGB_FIX_NAME=config.get('RGB_FIX_NAME')
 TMP_RGB_PROCESS_DIR=config.get('TMP_RGB_PROCESS_DIR')
-
-def removeDir(d):
-    if os.path.exists(d):
-        shutil.rmtree(d)
-
-def createDir(p):
-    if not os.path.exists(p):
-        os.makedirs(p)
         
 def fix_chromatic_abberation(wd, file):
+    time_start = time.perf_counter()
+
     removeDir(f"{wd}/{TMP_RGB_PROCESS_DIR}")
     createDir(f"{wd}/{TMP_RGB_PROCESS_DIR}")
     name=file.split('.fit')[0]
@@ -47,3 +42,6 @@ SAVEJPG ../{STACKED_DIR}/{name}-{RGB_FIX_NAME}-preview 100
         script=f"{SIRIL_TMP_DIR}/{CHROMATIC_ABBERATION_TEMPLATE}",
         log=f"{wd}/{CHROMATIC_ABBERATION_LOG}"
     )
+
+    removeDir(f"{wd}/{TMP_RGB_PROCESS_DIR}")
+    print(f"Chromatic Abberation Total Time: {round(time.perf_counter() - time_start, 2)}")
