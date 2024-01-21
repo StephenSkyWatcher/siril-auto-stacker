@@ -1,8 +1,11 @@
 import time
 import os
 import click
+import shutil
 from colorama import Fore,Style
 from dotenv import load_dotenv, dotenv_values
+from pathlib import Path
+from .maintenance import createDir
 from .siril import siril, write_script
 
 load_dotenv()
@@ -15,8 +18,18 @@ BIASES_LOG=config.get('BIASES_LOG')
 PROCESS_DIR=config.get('PROCESS_DIR')
 STACKED_DIR=config.get('STACKED_DIR')
 STACKED_BIASES_NAME=config.get('STACKED_BIASES_NAME')
+MASTER_BIASES_DIR=config.get('MASTER_BIASES_DIR')
 
 def stackBiases(wd, master_bias_fits=None, replace=False):
+    if (replace):
+        createDir(os.path.dirname(master_bias_fits)+"/backups")
+        shutil.copyfile(master_bias_fits, os.path.dirname(master_bias_fits)+"/backups/" + Path(master_bias_fits).stem + '.fit')
+
+    replaceMaster=f"""\
+cd ../{STACKED_DIR}
+LOAD {STACKED_BIASES_NAME}
+SAVE {Path(master_bias_fits).stem}
+    """
 
     time_start = time.perf_counter()
     write_script(
@@ -28,6 +41,7 @@ cd biases
 CONVERT biases -out=../{PROCESS_DIR}
 cd ../{PROCESS_DIR}
 STACK biases_.seq rej w 3 3 -norm=mul -out=../{STACKED_DIR}/{STACKED_BIASES_NAME}
+{replaceMaster if replace else ''}
 '''
 )
     siril(

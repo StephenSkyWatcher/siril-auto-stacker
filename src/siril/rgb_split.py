@@ -8,13 +8,13 @@ config = dotenv_values(".env")
 SIRIL_TMP_DIR=config.get('SIRIL_TMP_DIR')
 PROCESS_DIR=config.get('PROCESS_DIR')
 STACKED_DIR=config.get('STACKED_DIR')
-CHROMATIC_ABBERATION_TEMPLATE=config.get('CHROMATIC_ABBERATION_TEMPLATE')
-CHROMATIC_ABBERATION_LOG=config.get('CHROMATIC_ABBERATION_LOG')
+RGB_SPLIT_TEMPLATE=config.get('RGB_SPLIT_TEMPLATE')
+RGB_SPLIT_LOG=config.get('RGB_SPLIT_LOG')
 STACKED_LIGHTS_NAME=config.get('STACKED_LIGHTS_NAME')
 RGB_FIX_NAME=config.get('RGB_FIX_NAME')
 TMP_RGB_PROCESS_DIR=config.get('TMP_RGB_PROCESS_DIR')
         
-def fix_chromatic_abberation(wd, file):
+def rgb_split(wd, file):
     time_start = time.perf_counter()
 
     removeDir(f"{wd}/{TMP_RGB_PROCESS_DIR}")
@@ -22,7 +22,7 @@ def fix_chromatic_abberation(wd, file):
     name=file.split('.fit')[0]
     
     write_script(
-        name=CHROMATIC_ABBERATION_TEMPLATE,
+        name=RGB_SPLIT_TEMPLATE,
         content=f'''requires 1.2.0
 cd {STACKED_DIR}
 LOAD {file}
@@ -37,11 +37,11 @@ SAVEJPG ../{STACKED_DIR}/{name}-{RGB_FIX_NAME}-preview 100
 ''')
 
     siril(
-        title="FIXING CHROMATIC ABBERATION",
+        title="SPLITTING INTO RGB CHANNELS",
         wd=wd, 
-        script=f"{SIRIL_TMP_DIR}/{CHROMATIC_ABBERATION_TEMPLATE}",
-        log=f"{wd}/{CHROMATIC_ABBERATION_LOG}"
+        script=f"{SIRIL_TMP_DIR}/{RGB_SPLIT_TEMPLATE}",
+        log=f"{wd}/{RGB_SPLIT_LOG}"
     )
 
     removeDir(f"{wd}/{TMP_RGB_PROCESS_DIR}")
-    print(f"Chromatic Abberation Total Time: {round(time.perf_counter() - time_start, 2)}")
+    print(f"RGB Split Total Time: {round(time.perf_counter() - time_start, 2)}")

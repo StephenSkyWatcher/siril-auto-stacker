@@ -21,8 +21,8 @@ LOAD {file}
 PCC
 SAVE {name}-pcc
 LOAD {name}-pcc
-DENOISE -mod=0.5 -nocosmetic
-SAVE {name}-pcc-denoise
+autostretch
+SAVEJPG {name}-pcc-preview 100
 ''')
 
     siril(

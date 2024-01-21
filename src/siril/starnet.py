@@ -11,17 +11,17 @@ STARNET_LOG=config.get('STARNET_LOG')
 STACKED_LIGHTS_NAME=config.get('STACKED_LIGHTS_NAME')
 
 def starnet(wd, file):
-    print(f"Starnet++ Total Time: {round(time.perf_counter() - time_start, 2)}")
+    time_start = time.perf_counter()
     write_script(
         name=STARNET_TEMPLATE,
         content=f'''requires 1.2.0
 cd {STACKED_DIR}
-LOAD {file}
-STARNET -stretch -upscale
-LOAD starless_{STACKED_LIGHTS_NAME}.fit
+# LOAD {file}
+# STARNET -stretch -upscale
+LOAD starless_{STACKED_LIGHTS_NAME}.fits
 AUTOSTRETCH
 SAVEJPG starless_{STACKED_LIGHTS_NAME}-preview 100
-LOAD starmask_{STACKED_LIGHTS_NAME}.fit
+LOAD starmask_{STACKED_LIGHTS_NAME}.fits
 SAVEJPG starmask_{STACKED_LIGHTS_NAME}-preview 100
 '''
 )
@@ -32,6 +32,7 @@ SAVEJPG starmask_{STACKED_LIGHTS_NAME}-preview 100
         script=f"{SIRIL_TMP_DIR}/{STARNET_TEMPLATE}",
         log=f"{wd}/{STARNET_LOG}"
     )
-    time_start = time.perf_counter()
+    
+    print(f"Starnet++ Total Time: {round(time.perf_counter() - time_start, 2)}")
 
 
