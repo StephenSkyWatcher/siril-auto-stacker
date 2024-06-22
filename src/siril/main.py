@@ -71,6 +71,8 @@ def stack(wd, iso):
         time_firstStart = time.perf_counter()
         
         #  PRE PROCESSING
+
+        # TODO: Check if files have been converted already perhaps? And skip?
         current_bias_fits = checkBiases(wd=wd, master_bias_fits=master_bias_fits)
         stackFlats(wd=wd, bias_fits=current_bias_fits)
         stackDarks(wd=wd)
@@ -96,6 +98,9 @@ def stack(wd, iso):
         print(f"Post Processing Grand Total Time: {minutes}m {seconds}s")
         
         logCenterCoordinates(wd)
+        
+        # TODO: Play sound when complete? Send text? Email? Notification?
+
     except Exception as e:
         print(e.args)
 

@@ -31,5 +31,5 @@ def sirilLogger(line):
     if ('progress:' in content):
         logStepDetail(f"{content}")
 
-    if ('failed' in content and not '0 failed' in content and not '[FAILURE] initial call to atFindTrans failed' in content):
+    if ('failed' in content and not '0 failed' in content and not 'initial call to atFindTrans failed' in content):
         logFailure(content)
