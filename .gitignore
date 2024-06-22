@@ -1,4 +1,5 @@
-lib/starnet/
+lib/starnet
+lib/masters
 *.fit
 tmp/
 tmp*
