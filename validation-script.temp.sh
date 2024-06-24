@@ -142,7 +142,7 @@ function verify() {
 # 
 # 
 # 
-verify $LIGHTS_PATH
+# verify $LIGHTS_PATH
 
 if [ -z ${NO_DARKS+x} ]; then verify $DARKS_PATH; else pass "Skipping darks verification"; fi
 if [ -z ${NO_FLATS+x} ]; then verify $FLATS_PATH; else pass "Skipping flats verification"; fi

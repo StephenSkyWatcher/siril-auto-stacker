@@ -1,1 +1,4 @@
 tmp/
+/sample
+/masters
+__pycache__

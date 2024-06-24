@@ -1,7 +1,7 @@
-#!/bin/bash
-set -a               
-source config.ini
-set +a
+# #!/bin/bash
+# set -a               
+# source config.ini
+# set +a
 
-rm -r $STACK_HOME
-rm  ~/.local/bin/stack
+# rm -r $STACK_HOME
+# rm  ~/.local/bin/stack

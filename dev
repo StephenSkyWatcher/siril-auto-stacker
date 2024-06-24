@@ -1,6 +1,0 @@
-#!/bin/bash
-set -a               
-source ./_dev/config.ini
-set +a
-
-./stack "$@"
