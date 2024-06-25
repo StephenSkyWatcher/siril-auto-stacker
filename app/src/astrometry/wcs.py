@@ -5,11 +5,13 @@ def get_center_coords(wcsfile):
 
     wcs = subprocess.run(['wcsinfo', wcsfile],
                          stdout=subprocess.PIPE, universal_newlines=True)
-
+    ra = None
+    dec = None
+    
     for line in wcs.stdout.split("\n"):
         if "ra_center " in line:
             ra = line.split(" ")[1].strip()
         if "dec_center " in line:
             dec = line.split(" ")[1].strip()
 
-    return ra, dec
+    return ra, dec if ra and dec else None
