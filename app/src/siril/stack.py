@@ -1,3 +1,4 @@
+import math
 from pysiril.wrapper import *
 from pysiril.siril import *
 from matplotlib import pyplot as plt
@@ -7,6 +8,8 @@ import os
 from exiftool import ExifToolHelper
 import subprocess
 from ..astrometry.wcs import get_center_coords
+from astropy import units as u
+from astropy.coordinates import (ICRS, SkyCoord, get_icrs_coordinates)
 
 
 class FilesConfig:
@@ -85,7 +88,7 @@ class Stack(StackConfig):
     cmd.help('bgnoise')
     '''
 
-    def __init__(self, working_dir, master_dark_file=None, master_flat_file=None, master_bias_file=None, master_light_file=None):
+    def __init__(self, working_dir, master_dark_file=None, master_flat_file=None, master_bias_file=None, master_light_file=None, target_ra=None, target_dec=None):
         super().__init__(working_dir=working_dir)
         self.working_dir = working_dir
         self.app = Siril()
@@ -96,6 +99,27 @@ class Stack(StackConfig):
         self.master_flat_file = master_flat_file
         self.master_bias_file = master_bias_file
         self.master_light_file = master_light_file
+
+        target_name = os.path.basename(
+            os.path.normpath(self.working_dir)).replace('_', " ")
+
+        try:
+            coords = get_icrs_coordinates(
+                name=target_name, parse=False, cache=False)
+        except Exception as e:
+            print(e)
+            coords = None
+
+        c = SkyCoord(
+            ra=coords.ra.to(u.deg),
+            dec=coords.dec.to(u.deg),
+            frame=ICRS,
+        ) if coords else None
+
+        self.target_ra = coords.ra.to_string(u.hour) if coords else None
+        self.target_dec = coords.dec.to_string(u.hour) if coords else None
+        self.constellation = c.get_constellation() if c else None
+        print(f"Constellation: {c.get_constellation()}")
 
     def provision(self):
         Path(self.process_dir).mkdir(parents=True, exist_ok=True)
@@ -112,27 +136,46 @@ class Stack(StackConfig):
         if file_type == 'bias':
             master_stacked_name = self.bias_stacked_name
         elif file_type == 'dark':
-            master_stacked_name = self.bias_stacked_name
+            master_stacked_name = self.dark_stacked_name
         else:
             return ''
 
+        first_light_image_file = f"{self.lights_dir}/{os.listdir(self.lights_dir)[0]}"
+
         with ExifToolHelper() as exif:
-            first_light_image_file = f"{self.lights_dir}/{os.listdir(self.lights_dir)[0]}"
             tags = exif.get_tags(files=first_light_image_file, tags=[
-                "EXIF:ISO", "Make", "Model"])[0]
+                "EXIF:ISO", "Make", "Model", "ExposureTime"])[0]
             iso = tags.get('EXIF:ISO')
             model = tags.get('EXIF:Model')
-            master_file_name = f"{self.master_library_path}/{model} {iso} {master_stacked_name}.{self.fits_extension}".replace(
-                " ", "_")
+            exposure = math.ceil(
+                float(tags.get('EXIF:ExposureTime')))
+            if file_type == 'dark':
+                exposureSec = f"{exposure}s" if file_type == 'dark' else None
+                master_file_name = f"{self.master_library_path}/{model} {iso} {exposureSec} {master_stacked_name}.{self.fits_extension}".replace(
+                    " ", "_")
+            else:
+                master_file_name = f"{self.master_library_path}/{model} {iso} {master_stacked_name}.{self.fits_extension}".replace(
+                    " ", "_")
 
+            print("")
+            print("get_library_file()")
+            print(f"master_file_name: {master_file_name}")
+            print("")
+            print("")
             if os.path.isfile(master_file_name):
                 return master_file_name
             else:
                 return ""
 
     def biases(self, save_to_master_library: bool = False, overwrite: bool = False):
-        if os.path.exists(self.biases_dir) and len(os.listdir(self.biases_dir)) != 0:
-            if os.path.isfile(f"{self.masters_dir}{self.bias_stacked_name}.{self.fits_extension}") and overwrite:
+        biases_exist = os.path.exists(self.biases_dir) and len(
+            os.listdir(self.biases_dir)) != 0
+
+        if biases_exist:
+            master_bias_file_exists = os.path.isfile(
+                f"{self.masters_dir}{self.bias_stacked_name}.{self.fits_extension}")
+
+            if master_bias_file_exists and not overwrite:
                 self.master_bias_file = f"{self.masters_dir}/{self.bias_stacked_name}"
             else:
                 self.start()
@@ -172,11 +215,19 @@ class Stack(StackConfig):
                     self.master_bias_file = f"{self.masters_dir}/{self.bias_stacked_name}"
                     self.siril.cd(self.masters_dir)
                     self.siril.save(self.bias_stacked_name)
+        else:
+            raise ("No bias files found")
 
-    def flats(self, try_master_bias: bool = True, overwrite: bool = False):
-        if os.path.exists(self.flats_dir) and len(os.listdir(self.flats_dir)) != 0:
-            if os.path.isfile(f"{self.masters_dir}{self.flat_stacked_name}.{self.fits_extension}") and overwrite:
-                self.master_bias_file = f"{self.masters_dir}/{self.flat_stacked_name}"
+    def flats(self, overwrite: bool = False):
+        flats_exist = os.path.exists(self.flats_dir) and len(
+            os.listdir(self.flats_dir)) != 0
+
+        if flats_exist:
+            master_flat_exists = os.path.isfile(
+                f"{self.masters_dir}{self.flat_stacked_name}.{self.fits_extension}")
+
+            if master_flat_exists and not overwrite:
+                self.master_flat_file = f"{self.masters_dir}/{self.flat_stacked_name}"
             else:
                 self.start()
                 self.siril.cd(self.flats_dir_name)
@@ -188,10 +239,13 @@ class Stack(StackConfig):
 
                 self.siril.cd(self.process_dir)
 
-                master_bias = None
+                master_bias = self.get_library_file('bias')
 
-                if try_master_bias:
-                    master_bias = self.get_library_file('bias')
+                print("")
+                print("")
+                print(f"master_bias: {master_bias}")
+                print("")
+                print("")
 
                 self.siril.calibrate(self.flat_conversion_name,
                                      bias=master_bias if master_bias else None,
@@ -211,8 +265,14 @@ class Stack(StackConfig):
                 self.siril.save(self.flat_stacked_name)
 
     def darks(self, save_to_master_library: bool = False, overwrite: bool = False):
-        if os.path.exists(self.darks_dir) and len(os.listdir(self.darks_dir)) != 0:
-            if os.path.isfile(f"{self.masters_dir}/{self.dark_stacked_name}.{self.fits_extension}") and overwrite:
+        darks_exist = os.path.exists(self.darks_dir) and len(
+            os.listdir(self.darks_dir)) != 0
+
+        if darks_exist:
+            master_dark_exists = os.path.isfile(
+                f"{self.masters_dir}/{self.dark_stacked_name}.{self.fits_extension}")
+
+            if master_dark_exists and not overwrite:
                 self.master_bias_file = f"{self.masters_dir}/{self.dark_stacked_name}"
             else:
                 self.start()
@@ -239,11 +299,13 @@ class Stack(StackConfig):
                         self.siril.cd(self.master_library_path)
                         first_image_file = f"{self.darks_dir}/{os.listdir(self.darks_dir)[0]}"
                         tags = exif.get_tags(files=first_image_file, tags=[
-                            "EXIF:ISO", "Make", "Model"])[0]
+                            "EXIF:ISO", "Make", "Model", "ExposureTime"])[0]
                         iso = tags.get('EXIF:ISO')
                         model = tags.get('EXIF:Model')
+                        exposure = math.ceil(
+                            float(tags.get('EXIF:ExposureTime')))
                         # TODO: Perhaps add weather conditions to the name (temp range?)
-                        master_library_name = f"{model} {iso} {self.dark_stacked_name}".replace(
+                        master_library_name = f"{model} {iso} {exposure}s {self.dark_stacked_name}".replace(
                             " ", "_")
                         self.siril.save(master_library_name)
                         self.master_dark_file = f"{self.master_library_path}/{master_library_name}"
@@ -254,59 +316,71 @@ class Stack(StackConfig):
                     self.siril.cd(self.masters_dir)
                     self.siril.save(self.dark_stacked_name)
 
-    def lights(self, try_master_darks=True):
-        self.start()
-        self.siril.cd(self.lights_dir_name)
+    def lights(self):
+        lights_exist = os.path.exists(self.darks_dir) and len(
+            os.listdir(self.darks_dir)) != 0
 
-        self.siril.convert(self.light_conversion_name,
-                           out=self.process_dir,
-                           fitseq=True
-                           )
+        if lights_exist:
+            self.start()
+            self.siril.cd(self.lights_dir_name)
 
-        self.siril.cd(self.process_dir)
+            self.siril.convert(self.light_conversion_name,
+                               out=self.process_dir,
+                               fitseq=True
+                               )
 
-        self.master_dark_file = self.get_library_file(
-            'dark') if try_master_darks else self.master_dark_file if self.master_dark_file else None
+            self.siril.cd(self.process_dir)
 
-        flat_file = f"{self.master_flat_file}.{self.fits_extension}" if self.master_flat_file else None
+            master_library_dark = self.get_library_file('dark')
 
-        self.siril.calibrate(self.light_conversion_name,
-                             dark=self.master_dark_file,
-                             flat=flat_file,
-                             cfa=True,
-                             equalize_cfa=True,
-                             cc='dark',
-                             sighi=3,
-                             siglo=3,
-                             debayer=True,
-                             prefix=self.preprocess_prefix
+            self.master_dark_file = f"{self.master_dark_file}.{self.fits_extension}" if self.master_dark_file else None
+            flat_file = f"{self.master_flat_file}.{self.fits_extension}" if self.master_flat_file else None
+            dark_file = self.master_dark_file if self.master_dark_file else master_library_dark
+
+            print('')
+            print('')
+            print("dark_file", dark_file)
+            print("flat_file", flat_file)
+            print('')
+            print('')
+
+            self.siril.calibrate(self.light_conversion_name,
+                                 dark=dark_file,
+                                 flat=flat_file,
+                                 cfa=True,
+                                 equalize_cfa=True,
+                                 cc='dark',
+                                 sighi=3,
+                                 siglo=3,
+                                 debayer=True,
+                                 prefix=self.preprocess_prefix
+                                 )
+
+            self.siril.register(
+                f"{self.preprocess_prefix}{self.light_conversion_name}",
+                nostarlist=True,
+                pass2=True
+            )
+
+            self.siril.register(
+                f"{self.preprocess_prefix}{self.light_conversion_name}",
+                nostarlist=True,
+                prefix=self.registered_prefix,
+            )
+
+            self.siril.stack(f"{self.registered_prefix}{self.preprocess_prefix}{self.light_conversion_name}",
+                             type='rej',
+                             sigma_low=3,
+                             sigma_high=3,
+                             norm='addscale',
+                             rejection_type="w",
+                             rgb_equal=True,
+                             out=self.light_stacked_name
                              )
 
-        self.siril.register(
-            f"{self.preprocess_prefix}{self.light_conversion_name}",
-            nostarlist=True,
-            pass2=True
-        )
-
-        self.siril.register(
-            f"{self.preprocess_prefix}{self.light_conversion_name}",
-            nostarlist=True,
-            prefix=self.registered_prefix,
-        )
-
-        self.siril.stack(f"{self.registered_prefix}{self.preprocess_prefix}{self.light_conversion_name}",
-                         type='rej',
-                         sigma_low=3,
-                         sigma_high=3,
-                         norm='addscale',
-                         rejection_type="w",
-                         rgb_equal=True,
-                         out=self.light_stacked_name
-                         )
-
-        self.master_light_file = f"{self.masters_dir}/{self.light_stacked_name}"
-        self.siril.cd(self.masters_dir)
-        self.siril.save(self.light_stacked_name)
+            self.master_light_file = f"{self.masters_dir}/{self.light_stacked_name}"
+            self.siril.cd(self.masters_dir)
+            self.siril.save(self.light_stacked_name)
 
     def solve(self):
         self.start()
@@ -320,12 +394,27 @@ class Stack(StackConfig):
             f"{self.results_dir}/{self.light_stacked_name}"
         ).mkdir(parents=True, exist_ok=True)
 
-        subprocess.run([
-            'solve-field',
-            f"{self.light_stacked_name}.jpg",
-            '-D',
-            f"{self.results_dir}/{self.light_stacked_name}"
-        ])
+        solve_cmd = [
+            'solve-field', f"{self.process_dir}/{self.light_stacked_name}.jpg",
+            '-D', f"{self.results_dir}/{self.light_stacked_name}",
+            "--downsample", "2",
+            "--overwrite",
+            "--scale-low", "2",  # 2.24 arcsec per pixel for Sharpstar and T8I
+            "--scale-high", "3",  # 2.24 arcsec per pixel for Sharpstar and T8I
+            "-u", "arcsecperpix"
+        ]
+
+        # if (self.target_ra):
+        #     solve_cmd.extend(["--ra", self.target_ra])
+
+        # if (self.target_dec):
+        #     solve_cmd.extend(["--dec", self.target_dec])
+
+        print("")
+        print(" ".join(solve_cmd))
+        print("")
+
+        subprocess.run(solve_cmd)
 
     def save_preview(self, rmgreen: bool = True, autostretch: bool = True, pcc: bool = True, starnet: bool = True):
         self.start()
@@ -334,21 +423,27 @@ class Stack(StackConfig):
         self.siril.cd(self.process_dir)
         self.siril.load(image)
 
+        if pcc:
+            ra, dec = get_center_coords(
+                f"{self.results_dir}/{self.light_stacked_name}/{self.light_stacked_name}.wcs"
+            )
+
+            if (not ra or not dec):
+                ra = self.target_ra
+                dec = self.target_dec
+
+            if ra and dec:
+                self.siril.pcc(
+                    limitmag=0,
+                    center_coords=f"{ra},{dec}",
+                    platesolve=False,
+                    catalog=f"{self.results_dir}/{self.light_stacked_name}/{self.light_stacked_name}.wcs")
+
         if rmgreen:
             self.siril.rmgreen()
 
         if autostretch:
             self.siril.autostretch()
-
-        if pcc:
-            ra, dec = get_center_coords(
-                f"{self.results_dir}/{self.light_stacked_name}/{self.light_stacked_name}.wcs"
-            )
-            if ra and dec:
-                self.siril.pcc(
-                    center_coords=f"{ra},{dec}",
-                    platesolve=False,
-                    catalog=f"{self.results_dir}/{self.light_stacked_name}/{self.light_stacked_name}.wcs")
 
         self.siril.cd(self.results_dir)
         self.siril.save(f"{self.light_stacked_name}-preview")
@@ -366,7 +461,7 @@ class Stack(StackConfig):
     def hist(self):
         # MOVE THIS OUT TO ITS OWN CLASS OR FUNCTION?
         img = cv.imread(
-            f"{self.results_dir}/{self.light_stacked_name}-pcc.jpg")
+            f"{self.results_dir}/{self.light_stacked_name}-preview.jpg")
         assert img is not None, "file could not be read, check with os.path.exists()"
         color = ('b', 'g', 'r')
         for i, col in enumerate(color):
