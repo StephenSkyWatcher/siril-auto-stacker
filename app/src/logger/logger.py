@@ -3,6 +3,7 @@ import inspect
 import pprint
 from datetime import datetime, timedelta
 from .color import *
+import os
 
 # https://pygments.org/docs/styles/#ansiterminalstyle
 from pygments import highlight
@@ -77,6 +78,9 @@ class Logger(logging.Logger):
         fileName, lineno = self.inspector()
         colored_message = f"{time} {fg.GREEN}[INFO] {msg}{fg.RESET} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
         super().info(colored_message, *args, **kwargs)
+        with open(os.environ['INFO_LOG_FILE'], "a") as f:
+            f.write(
+                f"{time} {fileName.replace('/home/stephen/Documents/siril-auto-stack/app/src/', '')}#{lineno} {msg}\n")
 
     def warning(self, msg, *args, **kwargs):
         time = datetime.now().strftime(TIME_FORMAT)
@@ -90,6 +94,8 @@ class Logger(logging.Logger):
         fileName, lineno = self.inspector()
         colored_message = f"{fg.RED}[ERROR] {fg.RED}{msg}{fg.RESET} {time} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
         super().error(colored_message, *args, **kwargs)
+        with open(os.environ['ERROR_LOG_FILE'], "a") as f:
+            f.write(f"{time} {fileName}#{lineno} {msg}\n")
 
     def critical(self, msg, *args, **kwargs):
         time = datetime.now().strftime(TIME_FORMAT)

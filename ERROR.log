@@ -1,0 +1,4 @@
+2024-07-12 20:43:54 /home/stephen/Documents/siril-auto-stack/app/src/siril/master_library.py#25 get_camera_exif failed
+2024-07-12 20:43:54 /home/stephen/Documents/siril-auto-stack/app/src/siril/master_library.py#56 get_library_file failed
+2024-07-12 20:43:54 /home/stephen/Documents/siril-auto-stack/app/src/main.py#133 ('Failed to Convert flat frames', FileNotFoundError(2, 'No such file or directory'))
+2024-07-12 20:43:56 /home/stephen/Documents/siril-auto-stack/app/src/main.py#135 [COMPLETED] Error!

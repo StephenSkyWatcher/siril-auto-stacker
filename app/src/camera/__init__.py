@@ -1,0 +1,1 @@
+from .gphoto import Camera

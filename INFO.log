@@ -1,0 +1,9 @@
+2024-07-12 20:43:50 siril/siril.py#52 Starting Siril
+2024-07-12 20:43:53 siril/siril.py#57 Siril Started
+2024-07-12 20:43:53 siril/preprocess.py#30 No frames found in /home/stephen/Pictures/NGC_7380_wizard_nebula/darks/night_1
+2024-07-12 20:43:53 siril/preprocess.py#30 No frames found in /home/stephen/Pictures/NGC_7380_wizard_nebula/darks/night_2
+2024-07-12 20:43:53 siril/preprocess.py#30 No frames found in /home/stephen/Pictures/NGC_7380_wizard_nebula/flats/night_1
+2024-07-12 20:43:53 siril/preprocess.py#37 Converting flat frames from: 2
+2024-07-12 20:43:54 siril/master_library.py#12 Getting camera ISO and Model
+2024-07-12 20:43:54 siril/siril.py#60 Closing Siril
+2024-07-12 20:43:56 siril/siril.py#62 Siril Closed
