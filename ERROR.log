@@ -2,3 +2,31 @@
 2024-07-12 20:43:54 /home/stephen/Documents/siril-auto-stack/app/src/siril/master_library.py#56 get_library_file failed
 2024-07-12 20:43:54 /home/stephen/Documents/siril-auto-stack/app/src/main.py#133 ('Failed to Convert flat frames', FileNotFoundError(2, 'No such file or directory'))
 2024-07-12 20:43:56 /home/stephen/Documents/siril-auto-stack/app/src/main.py#135 [COMPLETED] Error!
+2024-07-23 18:33:37 /home/stephen/Documents/siril-auto-stack/app/src/convert.py#47 Dest directory not specified with -o or --out - using src directory
+2024-07-23 19:25:53 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#120 Error: Path.replace() takes 2 positional arguments but 3 were given
+2024-07-23 19:26:40 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#120 Error: Path.replace() takes 2 positional arguments but 3 were given
+2024-07-23 19:27:24 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#121 Error: Path.replace() takes 2 positional arguments but 3 were given
+2024-07-23 19:29:22 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#122 Error: Path.replace() takes 2 positional arguments but 3 were given
+2024-07-23 19:31:11 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#123 Error: Path.replace() takes 2 positional arguments but 3 were given
+2024-07-23 20:14:34 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#84 Failed to stack darks sequence
+2024-07-23 20:14:34 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#97 Error: 'Namespace' object has no attribute 'src'
+2024-07-23 20:15:04 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#84 Failed to stack darks sequence
+2024-07-23 20:15:04 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#97 Error: [Errno 20] Not a directory: '/home/stephen/Documents/siril-auto-stack/sample/pleiades-sm/darks/process/darks.fit'
+2024-07-23 20:16:03 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#97 Error: [Errno 20] Not a directory: '/home/stephen/Documents/siril-auto-stack/sample/pleiades-sm/darks/process/darks.seq'
+2024-07-23 21:02:25 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate lights Frames
+2024-07-23 21:02:59 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate lights Frames
+2024-07-23 21:04:19 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate lights Frames
+2024-07-23 21:12:04 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate lights Frames
+2024-07-23 21:14:05 /home/stephen/Documents/siril-auto-stack/app/src/register.py#98 Error: name 'calibrate' is not defined
+2024-07-23 21:14:25 /home/stephen/Documents/siril-auto-stack/app/src/register.py#98 Error: Wrapper.register() got an unexpected keyword argument 'name'
+2024-07-23 21:43:24 /home/stephen/Documents/siril-auto-stack/app/src/postprocess.py#99 Error: name 'self' is not defined
+2024-07-23 23:10:07 /home/stephen/Documents/siril-auto-stack/app/src/postprocess.py#148 Error: try_target_data() missing 1 required positional argument: 'target'
+2024-07-23 23:15:42 /home/stephen/Documents/siril-auto-stack/app/src/postprocess.py#148 Error: try_target_data() takes 0 positional arguments but 1 was given
+2024-07-23 23:21:37 /home/stephen/Documents/siril-auto-stack/app/src/postprocess.py#148 Error: cannot unpack non-iterable NoneType object
+2024-07-24 01:51:46 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate flats Frames
+2024-07-24 01:52:53 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: Failed to calibrate flats Frames
+2024-08-13 01:03:33 /home/stephen/Documents/siril-auto-stack/app/src/convert.py#94 Error: [Errno 2] No such file or directory: '/home/stephen/Documents/siril-auto-stack/sample/m_33_triangulum/lights'
+2024-08-13 01:03:38 /home/stephen/Documents/siril-auto-stack/app/src/calibrate.py#132 Error: [Errno 2] No such file or directory: '/home/stephen/Documents/siril-auto-stack/sample/m_33_triangulum/lights/process'
+2024-08-13 01:03:44 /home/stephen/Documents/siril-auto-stack/app/src/register.py#100 Error: [Errno 2] No such file or directory: '/home/stephen/Documents/siril-auto-stack/sample/m_33_triangulum/lights/process'
+2024-08-13 01:03:49 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#96 Error: [Errno 2] No such file or directory: '/home/stephen/Documents/siril-auto-stack/sample/m_33_triangulum/lights/process'
+2024-08-13 01:04:46 /home/stephen/Documents/siril-auto-stack/app/src/stack.py#96 Error: Failed to stack r_pp_lights sequence

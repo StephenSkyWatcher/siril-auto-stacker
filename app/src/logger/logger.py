@@ -102,13 +102,13 @@ class Logger(logging.Logger):
         colored_message = f"{time} {fg.RED}{style.BRIGHT}'[CRITICAL] {style.RESET_ALL}\n{fg.RED}{msg}{fg.RESET}"
         super().critical(colored_message, *args, **kwargs)
 
-# def json(self, msg, *args, **kwargs):
-#     time = datetime.now().strftime(TIME_FORMAT)
-#     fileName, lineno = self.inspector()
-#     super().info(
-#         f"{fg.BLUE}[JSON]{fg.RESET} {time} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
-#     )
-#     pprint_color(msg)
+    def json(self, msg, json):
+        time = datetime.now().strftime(TIME_FORMAT)
+        fileName, lineno = self.inspector()
+        super().info(
+            f"{fg.BLUE}{msg}{fg.RESET} {time} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
+        )
+        pprint_color(json)
 
 # def time(self, *args, **kwargs):
 #     super().debug(datetime.now().strftime("%H:%M:%S"), *args, **kwargs)
