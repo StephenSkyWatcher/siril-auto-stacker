@@ -13,6 +13,10 @@ from pygments.token import Token
 from pygments.formatters import Terminal256Formatter
 from pygments.lexers import PythonLexer
 
+
+ERROR_LOG_FILE="/home/stephen/siril-auto-stacker/ERROR.log"
+INFO_LOG_FILE="/home/stephen/siril-auto-stacker/INFO.log"
+
 """
 print(list(get_all_styles()))
 print(list(get_style_by_name('emacs')))
@@ -78,9 +82,9 @@ class Logger(logging.Logger):
         fileName, lineno = self.inspector()
         colored_message = f"{time} {fg.GREEN}[INFO] {msg}{fg.RESET} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
         super().info(colored_message, *args, **kwargs)
-        with open(os.environ['INFO_LOG_FILE'], "a") as f:
+        with open(INFO_LOG_FILE, "a") as f:
             f.write(
-                f"{time} {fileName.replace('/home/stephen/Documents/siril-auto-stack/app/src/', '')}#{lineno} {msg}\n")
+                f"{time} {fileName.replace('/home/stephen/siril-auto-stack/app/src/', '')}#{lineno} {msg}\n")
 
     def warning(self, msg, *args, **kwargs):
         time = datetime.now().strftime(TIME_FORMAT)
@@ -94,7 +98,7 @@ class Logger(logging.Logger):
         fileName, lineno = self.inspector()
         colored_message = f"{fg.RED}[ERROR] {fg.RED}{msg}{fg.RESET} {time} {style.DIM}{fileName}#{lineno}{style.RESET_ALL}"
         super().error(colored_message, *args, **kwargs)
-        with open(os.environ['ERROR_LOG_FILE'], "a") as f:
+        with open(ERROR_LOG_FILE, "a") as f:
             f.write(f"{time} {fileName}#{lineno} {msg}\n")
 
     def critical(self, msg, *args, **kwargs):

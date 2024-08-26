@@ -11,7 +11,6 @@ from ..astrometry.wcs import get_center_coords
 from astropy import units as u
 from astropy.coordinates import (ICRS, SkyCoord, get_icrs_coordinates)
 
-
 class FilesConfig:
     def __init__(
         self,

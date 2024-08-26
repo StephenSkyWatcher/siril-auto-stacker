@@ -196,29 +196,30 @@ def postprocess(file=args.file, target=args.target) -> bool:
     # siril.save(f"{Path(file).stem}.bak")
     # siril.load(file)
 
-    # siril.rmgreen()
+    siril.rmgreen()
 
-    # if target:
-    #     try_target_data()
+    if target:
+        try_target_data()
 
-    # if target_dec and target_ra:
-    #     _solve(
-    #         ra=target_ra,
-    #         dec=target_dec,
-    #         localasnet=False,
-    #         force=True,
-    #         downscale=True,
-    #         noflip=False,
-    #         catalog=None,
-    #     )
+    if target_dec and target_ra:
+        _solve(
+            ra=target_ra,
+            dec=target_dec,
+            localasnet=False,
+            force=True,
+            downscale=True,
+            noflip=False,
+            catalog=None,
+        )
 
-    #     siril.pcc(
-    #         center_coords=f"{target_ra},{target_dec}",
-    #         platesolve=False,
-    #     )
+        siril.pcc(
+            center_coords=f"{target_ra},{target_dec}",
+            platesolve=False,
+        )
 
-    # siril.save(f"{name}-processed")
-    # siril.load(f"{name}-processed")
+    siril.save(f"{name}-processed")
+    siril.load(f"{name}-processed")
+    
     siril.starnet(stretch=True)
 
     starmask = f"starmask_{name}-processed"

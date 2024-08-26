@@ -63,7 +63,7 @@ def register(
     siril.setext(fits_extension)
     siril.cd(str(Path(seq).parent))
 
-    Logger.info(f"Registering Frames")
+    Logger.info(f"Registering light Frames")
     name = Path(seq).stem
 
     GREEN_CHANNEL = 1
@@ -88,6 +88,8 @@ def register(
 
     if registration_result is not True:
         raise Exception(f"Failed to register {name} Frames with drizzle")
+
+    Logger.info(f"Registered light Frames")
 
     return True
 

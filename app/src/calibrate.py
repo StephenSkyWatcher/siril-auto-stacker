@@ -87,7 +87,7 @@ def calibrate(
     siril.setext(fits_extension)
     siril.cd(str(Path(seq).parent))
 
-    Logger.info(f"Converting Frames")
+    Logger.info(f"Calibrating {frame} Frames")
     name = Path(seq).stem
 
     calibrate_params = {
@@ -121,6 +121,7 @@ def calibrate(
     if calibrate_result is not True:
         raise Exception(f"Failed to calibrate {name} Frames")
 
+    Logger.info(f"Calibrated {frame} Frames")
     return calibrate_result
 
 

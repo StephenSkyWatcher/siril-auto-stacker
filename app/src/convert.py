@@ -8,12 +8,13 @@ from pysiril.siril import *  # type: ignore
 from pysiril.wrapper import *  # type: ignore
 
 from .logger import Logger as _Logger
+Logger = _Logger(__name__)
 
 """
 Converts a directory of images to FITS format
 
 Usage:
-    poetry run python -m src.convert /home/stephen/Documents/siril-auto-stack/sample/pleiades-sm/lights -fitseq
+    poetry run python -m src.convert /siril-auto-stack/sample/pleiades-sm/lights -fitseq
 
 """
 
@@ -21,7 +22,6 @@ fits_extension = os.getenv('FITS_EXTENSION', 'fit')
 cpu_cores = os.getenv('CPU_CORES', os.cpu_count())
 process_dir_name = os.getenv('PROCESS_DIR_NAME', 'process')
 
-Logger = _Logger(__name__)
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
@@ -59,15 +59,15 @@ if args.out is None:
 
 
 App = Siril()  # type: ignore
+print('app success BANG')
 siril = Wrapper(App)  # type: ignore
-
 
 def convert(src=args.src, out=args.out, fitseq=args.fitseq, debayer=args.debayer) -> bool:
     siril.setcpu(cpu_cores)
     siril.set16bits()
     siril.setext(fits_extension)
     siril.cd(src)
-    Logger.info(f"Converting Frames")
+    Logger.info(f"Converting Frames: {src}")
     name = Path(src).stem
 
     conversion_params = {
@@ -81,7 +81,10 @@ def convert(src=args.src, out=args.out, fitseq=args.fitseq, debayer=args.debayer
     [conversion_result] = siril.convert(name, **conversion_params)
 
     if conversion_result is not True:
+        Logger.error(conversion_result)
         raise Exception(f"Failed to convert {name} Frames")
+
+    Logger.info(f"Converted Frames: {src}")
 
     return conversion_result
 

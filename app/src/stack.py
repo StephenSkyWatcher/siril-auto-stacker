@@ -48,7 +48,7 @@ def stack(seq=args.seq, frame=args.frame) -> bool:
     siril.set16bits()
     siril.setext(fits_extension)
     siril.cd(str(Path(seq).parent))
-    Logger.info(f"Stacking Frames")
+    Logger.info(f"Stacking {frame} Frames")
     name = str(Path(seq).stem)
 
     stack_params = {
@@ -85,6 +85,7 @@ def stack(seq=args.seq, frame=args.frame) -> bool:
     if stack_result is not True:
         raise Exception(f"Failed to stack {name} sequence")
 
+    Logger.info(f"Stacked {frame} sequence")
     return stack_result
 
 

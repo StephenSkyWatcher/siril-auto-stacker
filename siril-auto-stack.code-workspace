@@ -1,11 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../siril-auto-stack-temp"
-		}
-	],
-	"settings": {}
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../../../mnt/linux/Astrophotography_Photos"
+    },
+    {
+      "path": "../../../mnt/external/storage/astrophotography"
+    }
+  ],
+  "settings": {}
 }
